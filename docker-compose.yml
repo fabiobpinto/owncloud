@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+   db:
+    image: mysql:5.7
+    container_name: db-mysql-server
+    restart: always
+    networks: 
+      - net-task
+    volumes:
+      - db-data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+
+
+   owncloud:
+    depends_on:
+     - db
+    restart: always
+    image: owncloud/server
+    container_name: owncloud
+    networks: 
+      - net-task 
+    volumes:
+      - db-owncloud:/var/www/html/config
+      - db-owncloud:/var/www/html/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      OWNCLOUD_DB_TYPE: mysql
+      OWNCLOUD_DB_USERNAME: root
+      OWNCLOUD_DB_PASSWORD: root123
+      OWNCLOUD_DB_NAME: owncloud
+      OWNCLOUD_DB_HOST: db
+      OWNCLOUD_ADMIN_USERNAME: admin
+      OWNCLOUD_ADMIN_PASSWORD: admin
+    ports:
+     - "8080:80"
+
+
+networks:
+   net-task:
+
+volumes:
+   db-data:
+   db-owncloud:
